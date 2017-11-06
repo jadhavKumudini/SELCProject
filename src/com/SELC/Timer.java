@@ -1,73 +1,65 @@
 package com.SELC;
 
-
-public class Clock {
+public class Timer {
 	
-	private float millisPerCycle;
+	private float mspsCycle;
 	
-	private long lastUpdate;
-	
-	private int elapsedCycles;
-	
-	private float excessCycles;
+	private float exceedCycles;
 	
 	private boolean isPaused;
 	
-	public Clock(float cyclesPerSecond) {
-		setCyclesPerSecond(cyclesPerSecond);
+    private long lastUpgrade;
+	
+	private int slipCycle; 
+	
+	public Timer(float cyclesPerSecond) {
+		setCSPS(cyclesPerSecond);
 		reset();
 	}
 	
-	public void setCyclesPerSecond(float cyclesPerSecond) {
-		this.millisPerCycle = (1.0f / cyclesPerSecond) * 1000;
+	public void setCSPS(float cyclesPerSecond) {
+		this.mspsCycle = (1.0f / cyclesPerSecond) * 1000;
 	}
 	
 	public void reset() {
-		this.elapsedCycles = 0;
-		this.excessCycles = 0.0f;
-		this.lastUpdate = getCurrentTime();
+		this.slipCycle = 0;
+		this.exceedCycles = 0.0f;
+		this.lastUpgrade = getCurrentTime();
 		this.isPaused = false;
 	}
 	
 	public void update() {
-		//Get the current time and calculate the delta time.
 		long currUpdate = getCurrentTime();
-		float delta = (float)(currUpdate - lastUpdate) + excessCycles;
-		
-		//Update the number of elapsed and excess ticks if we're not paused.
+		float delta = (float)(currUpdate - lastUpgrade) + exceedCycles;	
 		if(!isPaused) {
-			this.elapsedCycles += (int)Math.floor(delta / millisPerCycle);
-			this.excessCycles = delta % millisPerCycle;
+			this.slipCycle += (int)Math.floor(delta / mspsCycle);
+			this.exceedCycles = delta % mspsCycle;
 		}
-		
-		//Set the last update time for the next update cycle.
-		this.lastUpdate = currUpdate;
+	
+		this.lastUpgrade = currUpdate;
 	}
 	
 	public void setPaused(boolean paused) {
 		this.isPaused = paused;
 	}
-	
-	
+
 	public boolean isPaused() {
 		return isPaused;
 	}
-	
 
-	public boolean hasElapsedCycle() {
-		if(elapsedCycles > 0) {
-			this.elapsedCycles--;
+	public boolean hasSlipCycle() {
+		if(slipCycle > 0) {
+			this.slipCycle--;
 			return true;
 		}
 		return false;
 	}
 	
-	public boolean peekElapsedCycle() {
-		return (elapsedCycles > 0);
+	public boolean peekSlipCycle() {
+		return (slipCycle > 0);
 	}
 	
 	private static final long getCurrentTime() {
 		return (System.nanoTime() / 1000000L);
 	}
-
 }
